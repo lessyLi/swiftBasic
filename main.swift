@@ -9,14 +9,34 @@ import Foundation
 
 //1. Написать функцию, которая определяет, четное число или нет.
 
+///Первый вариант через функцию
 func isEvenNumber(_ number: Int) -> Bool {
     number.isMultiple(of: 2)
 }
 
+///Второй вариант без функций
+func isAnotherEvenNumber(_ number: Int) -> Bool {
+    if number % 2 != 0 {
+        return false
+    } else {
+        return true
+    }
+}
+
 //2. Написать функцию, которая определяет, делится ли число без остатка на 3.
 
+///Первый вариант через функцию
 func multiplyThreeNumber(_ number: Int) -> Bool {
     number.isMultiple(of: 3)
+}
+
+///Второй вариант без функций
+func ismultiplyThreeNumber(_ number: Int) -> Bool {
+    if number % 3 != 0 {
+        return false
+    } else {
+        return true
+    }
 }
 
 //3. Создать возрастающий массив из 100 чисел.
@@ -29,11 +49,22 @@ for i in 1...100 {
 
 //4. Удалить из этого массива все четные числа и все числа, которые не делятся на 3.
 
+///Первый вариант через создание другого массива
 var oneAnotherHundred = [Int]()
 
 for i in oneHundred {
     if i % 2 != 0 && i % 3 == 0 {
         oneAnotherHundred.append(i)
+    }
+}
+
+///Второй вариант с текущим массивом
+var trueIndex = 0
+for i in oneHundred {
+    if i % 2 == 0 || i % 3 != 0 {
+        oneHundred.remove(at: trueIndex)
+    } else {
+        trueIndex += 1
     }
 }
 
@@ -74,6 +105,5 @@ for i in 2...1000 {
     }
     }
 }
-
 
 
