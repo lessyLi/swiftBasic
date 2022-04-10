@@ -106,4 +106,204 @@ for i in 2...1000 {
     }
 }
 
+// MARK: - Protocol Car
+
+protocol Car {
+    
+    var brand: String { get }
+    var year: Int { get }
+    var engine: Engine { get set }
+    var windows: Windows { get set }
+    
+    func windows(status: Windows)
+    func engine(status: Engine)
+    
+}
+
+// MARK: - enums
+
+enum Windows {
+    case opened
+    case closed
+}
+
+enum Engine {
+    case on
+    case off
+}
+
+// MARK: - extensions Car
+
+extension Car {
+    
+    func windows(status: Windows) {
+        if status == Windows.opened {
+            print("Все окна открыли, не высовывайся!\n")
+        } else {
+            print("Все окна закрыли, больше не дует!\n")
+        }
+    }
+    
+    func engine(status: Engine) {
+        if status == Engine.off {
+            print("Приехали\n")
+        } else {
+            print("Поехали!\n")
+        }
+    }
+}
+
+// MARK: - class SportCar: Car
+
+final class SportCar: Car {
+ 
+    var brand: String
+    var year: Int
+    var engine = Engine.off
+    var windows = Windows.closed
+    ///Максимально разрешенная скорость
+    let maxSpeed = 250
+    ///Текущая скорость
+    var currentSpeed = 120 {
+        didSet {
+            ///Ограничение скорости
+            if currentSpeed > maxSpeed {
+                print("Are you crazy? Too fast!")
+                currentSpeed = oldValue
+            } else {
+                print("Your speed is \(currentSpeed) km/h")
+            }
+        }
+    }
+    
+    static var carCount = 0
+    
+    init(brand: String, year: Int) {
+        self.brand = brand
+        self.year = year
+        SportCar.carCount += 1
+    }
+    
+    func engine(status: Engine) {
+        if self.engine == Engine.off {
+            self.engine = .off
+        } else {
+            self.engine = .on
+        }
+    }
+    
+    func windows(status: Windows) {
+        if self.windows == Windows.opened {
+            self.windows = .opened
+        } else {
+            self.windows = .closed
+        }
+    }
+    
+    deinit {
+        SportCar.carCount -= 1
+        print("Спортивные машины вышли из моды")
+    }
+
+}
+
+extension SportCar: CustomStringConvertible {
+    var description: String {
+        "Я быстрая машинка \(brand) \(year) года выпуска. Погоняем?"
+    }
+}
+
+// MARK: - intances SportCar
+
+let mySportCar = SportCar(brand: "Honda", year: 2017)
+let yourSportCar = SportCar(brand: "Toyota", year: 2018)
+
+mySportCar.engine(status: Engine.on)
+mySportCar.windows(status: Windows.opened)
+print(SportCar.carCount)
+print(mySportCar)
+print(mySportCar.brand)
+
+mySportCar.currentSpeed = 180
+print(mySportCar.currentSpeed)
+mySportCar.currentSpeed = 280
+print(mySportCar.currentSpeed)
+
+
+// MARK: - class TrunkCar: Car
+
+final class TrunkCar: Car {
+ 
+    var brand: String
+    var year: Int
+    var engine = Engine.off
+    var windows = Windows.closed
+    ///Максимальная грузоподъемность
+    var loadCapacity = 5.0
+    ///Сколько уже загружено
+    var trunkOccupied = 0.0 {
+        didSet {
+            ///Ограничение на загрузку
+            if trunkOccupied >= loadCapacity {
+                print("Полная загрузка! Больше ничего не войдет.")
+                trunkOccupied = oldValue
+            } else {
+                print("Уже загружено \(trunkOccupied) тонн.")
+            }
+        }
+    }
+    
+    static var carCount = 0
+    
+    init(brand: String, year: Int) {
+        self.brand = brand
+        self.year = year
+        TrunkCar.carCount += 1
+    }
+    
+    func engine(status: Engine) {
+        if self.engine == Engine.off {
+            self.engine = .off
+        } else {
+            self.engine = .on
+        }
+    }
+    
+    func windows(status: Windows) {
+        if self.windows == Windows.opened {
+            self.windows = .opened
+        } else {
+            self.windows = .closed
+        }
+    }
+    
+    
+    deinit {
+        TrunkCar.carCount -= 1
+        print("Ни одного грузовика не осталось...")
+    }
+    
+}
+
+extension TrunkCar: CustomStringConvertible {
+    var description: String {
+        "Я рабочая лошадка \(brand) \(year) года выпуска. Загружаем?"
+    }
+}
+
+// MARK: - intances TrunkCar
+
+let myTrunkCar = TrunkCar(brand: "MAN", year: 2015)
+let yourTrunkCar = TrunkCar(brand: "Ford", year: 2016)
+
+myTrunkCar.engine(status: Engine.on)
+myTrunkCar.windows(status: Windows.opened)
+print(TrunkCar.carCount)
+print(myTrunkCar)
+print(myTrunkCar.brand)
+
+myTrunkCar.trunkOccupied = 1.5
+print(myTrunkCar.trunkOccupied)
+myTrunkCar.trunkOccupied = 5.2
+print(myTrunkCar.trunkOccupied)
 
