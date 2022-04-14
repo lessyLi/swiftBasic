@@ -106,4 +106,82 @@ for i in 2...1000 {
     }
 }
 
+// MARK: - Queue
+struct Queue<T> {
+    /// Пустой массив для хранения элементов
+    var elements: [T] = []
+    /// Кол-во элементов в очереди
+    var count = 0 {
+        didSet {
+            if oldValue > count {
+                print("Очередь уменьшилась с \(oldValue) до \(count) элементов.")
+            } else {
+                print("Очередь увеличилась с \(oldValue) до \(count) элементов")
+            }
+        }
+    }
+    /// Добавляет элемент в конец
+    mutating func add(element: T) {
+        elements.append(element)
+        count += 1
+    }
+    /// Удаляет первый элемент
+    mutating func remove() -> T? {
+        guard elements.count > 0 else {
+            return nil
+        }
+        count -= 1
+        return elements.removeFirst()
+    }
 
+    subscript(index: Int) -> T? {
+            index >= 0 && index < elements.count ? elements[index] : nil
+            }
+    
+}
+
+// MARK: - filter
+extension Queue {
+    func filter(_ check: (T) -> Bool) -> [T] {
+        var result = [T]()
+        for element in elements {
+            if check(element) {
+                result.append(element)
+            }
+        }
+        return result
+    }
+}
+
+// MARK: - map
+extension Queue {
+    func map(_ toDo: (T) -> T) -> [T] {
+        var result = [T]()
+        for element in elements {
+            result.append(element)
+        }
+        return result
+    }
+}
+
+// MARK: - instances
+var oneQueue = Queue<Int>()
+oneQueue.add(element: 24)
+oneQueue.add(element: 52)
+oneQueue.add(element: 3)
+print(oneQueue.count)
+print(oneQueue.elements)
+oneQueue.remove()
+print(oneQueue.count)
+print(oneQueue.elements)
+
+print(oneQueue[1] as Any)
+print(oneQueue[2] as Any)
+print(oneQueue[5] as Any)
+
+let twoQueue = oneQueue.filter {$0 < 50}
+print(twoQueue)
+let threeQueue = oneQueue.map {$0 * 2}
+print(threeQueue)
+let fourQueue = oneQueue.map {$0 + 10}
+print(fourQueue)
