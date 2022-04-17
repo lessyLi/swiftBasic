@@ -106,4 +106,170 @@ for i in 2...1000 {
     }
 }
 
+// MARK: - Ticket
+struct Ticket {
+    var count: Int
+    var price: Int
+    let country: Country
+}
+
+// MARK: - Country
+struct Country {
+    let name: String
+}
+
+// MARK: - errors
+enum FlyErrors: Error {
+    case unknownCountry
+    case noTickets
+    case notEnoughMoney
+    case covidRestrictions
+}
+
+// MARK: - FlyFromRussia (вариант без throws)
+final class FlyFromRussia {
+    // Список стран
+    var countries = [
+        "Italy": Ticket(count: 0, price: 0, country: Country(name: "Italy")),
+        "France": Ticket(count: 10, price: 800, country: Country(name: "France")),
+        "Greece": Ticket(count: 15, price: 750, country: Country(name: "Greece")),
+        "Turkey": Ticket(count: 78, price: 470, country: Country(name: "Spain")),
+        "Germany": Ticket(count: 57, price: 640, country: Country(name: "Germany")),
+        "Georgia": Ticket(count: 36, price: 540, country: Country(name: "Austria")),
+        "Armenia": Ticket(count: 100, price: 400, country: Country(name: "Armenia")),
+        "Mexico": Ticket(count: 0, price: 0, country: Country(name: "Mexico"))]
+    // Куда летим?
+    let country: String = ""
+    // Сколько есть денег
+    var myMoney = 600
+    // Сняты ли ковидные ограничения?
+    var isCovidOkay: Bool = false
+
+    // Полетим ли?
+    func willIFly(country: String, isCovidOkay: Bool) -> (Country?, FlyErrors?) {
+        // Проверяем ковидные ограничения
+        guard isCovidOkay else {
+            print("There are covid restrictions in \(country).")
+            return (nil, FlyErrors.covidRestrictions)
+        }
+        // Есть ли страна в списке
+        guard let myCountry = countries[country] else {
+            print("No information about \(country).")
+            return (nil, FlyErrors.unknownCountry)
+        }
+        // Есть ли билеты
+        guard myCountry.count > 0 else {
+            print("There are no tickets to \(country).")
+            return (nil, FlyErrors.noTickets)
+        }
+        // Достаточно ли денег
+        guard myMoney >= myCountry.price else {
+            print("You don't have enough money for \(country).")
+            return (nil, FlyErrors.notEnoughMoney)
+        }
+        // Покупаем билет
+        myMoney -= myCountry.price
+        var newCountry = myCountry
+        newCountry.count -= 1
+        countries[country] = newCountry
+        print("I'm going to \(country)! 🥳")
+        return (newCountry.country, nil)
+    }
+}
+// MARK: - instances
+let myTrip = FlyFromRussia()
+
+let myFirstTrip = myTrip.willIFly(country: "Germany", isCovidOkay: false)
+let mySecondTrip = myTrip.willIFly(country: "Mexico", isCovidOkay: true)
+let myThirdTrip = myTrip.willIFly(country: "Armenia", isCovidOkay: true)
+
+if let country = myFirstTrip.0 {
+    print("I'm going to \(country.name)! 🥳")
+} else if let error = myFirstTrip.1 {
+    print("Error: \(error.localizedDescription)")
+}
+
+
+// MARK: - FlyFromRussiaThrows (вариант со throws)
+final class FlyFromRussiaThrows {
+// Список стран
+var countries = [
+    "Italy": Ticket(count: 0, price: 0, country: Country(name: "Italy")),
+    "France": Ticket(count: 10, price: 800, country: Country(name: "France")),
+    "Greece": Ticket(count: 15, price: 750, country: Country(name: "Greece")),
+    "Turkey": Ticket(count: 78, price: 470, country: Country(name: "Spain")),
+    "Germany": Ticket(count: 57, price: 640, country: Country(name: "Germany")),
+    "Georgia": Ticket(count: 36, price: 540, country: Country(name: "Austria")),
+    "Armenia": Ticket(count: 100, price: 400, country: Country(name: "Armenia")),
+    "Mexico": Ticket(count: 0, price: 0, country: Country(name: "Mexico"))]
+// Куда летим?
+let country: String = ""
+// Сколько есть денег
+var myMoney = 600
+// Сняты ли ковидные ограничения?
+var isCovidOkay: Bool = false
+
+    // Полетим ли?
+    func willIFly(country: String, isCovidOkay: Bool) throws -> Country {
+        // Проверяем ковидные ограничения
+        guard isCovidOkay else {
+            print("There are covid restrictions in \(country).")
+            throw FlyErrors.covidRestrictions
+        }
+        // Есть ли страна в списке
+        guard let myCountry = countries[country] else {
+            print("No information about \(country).")
+            throw FlyErrors.unknownCountry
+        }
+        // Есть ли билеты
+        guard myCountry.count > 0 else {
+            print("There are no tickets to \(country).")
+            throw FlyErrors.noTickets
+        }
+        // Достаточно ли денег
+        guard myMoney >= myCountry.price else {
+            print("You don't have enough money for \(country).")
+            throw FlyErrors.notEnoughMoney
+        }
+        // Покупаем билет
+        myMoney -= myCountry.price
+        var newCountry = myCountry
+        newCountry.count -= 1
+        countries[country] = newCountry
+        print("I'm going to \(country)! 🥳")
+        return newCountry.country
+    }
+}
+
+// MARK: - instances
+let yourTrip = FlyFromRussiaThrows()
+// Попытка улететь в Германию
+do {
+    try yourTrip.willIFly(country: "Germany", isCovidOkay: false)
+} catch FlyErrors.covidRestrictions {
+    print("Covid restrictions")
+} catch FlyErrors.unknownCountry {
+    print("Unknown country")
+} catch FlyErrors.noTickets {
+    print("No tickets")
+} catch FlyErrors.notEnoughMoney {
+    print("Not enough money")
+} catch let error {
+    print(error.localizedDescription)
+}
+// Попытка улететь в Армению
+do {
+    try yourTrip.willIFly(country: "Armenia", isCovidOkay: true)
+} catch FlyErrors.covidRestrictions {
+    print("Covid restrictions")
+} catch FlyErrors.unknownCountry {
+    print("Unknown country")
+} catch FlyErrors.noTickets {
+    print("No tickets")
+} catch FlyErrors.notEnoughMoney {
+    print("Not enough money")
+} catch let error {
+    print(error.localizedDescription)
+}
+print(yourTrip.myMoney)
 
